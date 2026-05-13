@@ -3,9 +3,10 @@ const PostRoute = require('./Routes/post.route');
 const { Authrouter } = require('./Routes/auth.routes');
 const app = express()
 
+app.use(express.json())
 
 app.use('/api/posts',PostRoute)
-app.use('api/auth',Authrouter)
+app.use('/api/auth',Authrouter)
 
 
 app.listen('5000',()=>{
