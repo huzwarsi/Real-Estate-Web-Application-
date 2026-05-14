@@ -1,7 +1,14 @@
 
 
 const bcrypt = require("bcrypt");
-const prisma = require('../lib/prisma')
+const prisma = require('../lib/prisma');
+const { json } = require("express");
+const jwt = require('jsonwebtoken')
+
+const dotenv =  require('dotenv')
+dotenv.config()
+
+
 
 const register = async(req,res)=>{
 
@@ -39,42 +46,51 @@ const register = async(req,res)=>{
 
 }
 
-const login = async (req,res)=>{
-
-    const {email,password} = req.body
-
-    try{
-
-        
-        const user = await prisma.User.findUnique({
-            where:{
-                email
-            }})
-            if(!user){
-             return res.json({ message: 'Invalid Credintials' });
-
-            }
 
 
-        const ispasswordValid = await bcrypt.compare(password, user.password);
-            if(!ispasswordValid){
-             return res.json({ message: 'Invalid Credintials' });
-       
+const login = async (req, res) => {
+  const { email, password } = req.body;
 
-            }
-            res.json({ message: 'Login Successfully' });
-            
+  try {
 
-    }catch(error){
-        console.error('Error logging in user:', error);
-        res.status(500).json({ message: 'Error' });
+    const user = await prisma.user.findUnique({
+      where: {
+        email
+      }
+    });
+
+    if (!user) {
+      return res.json({ message: 'Invalid Credentials' });
     }
 
-// database Operations
+    const ispasswordValid = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!ispasswordValid) {
+      return res.json({ message: 'Invalid Credentials' });
+    }
 
 
+   const token = jwt.sign({
+    id  : user._id,
+    email : user.email,
+    userName : user.userName,
 
-}
+   }, process.env.Secret_Key,{expiresIn: '1h'})
+   console.log(token);
+
+   res.json({
+    message : 'Login successful',
+    token
+   })
+   
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).json({ message: 'Error' });
+  }
+};
 
 
 const logout = (req,res)=>{
