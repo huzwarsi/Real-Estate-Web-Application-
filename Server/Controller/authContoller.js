@@ -38,10 +38,10 @@ const register = async(req,res)=>{
         res.json({
             message:'User registered successfully',
             user: newUser
-        })
+        })      
     }catch(error){
         console.error('Error registering user:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'You are already exists' });
     }
 
 }
@@ -79,13 +79,19 @@ const login = async (req, res) => {
     userName : user.userName,
 
    }, process.env.Secret_Key,{expiresIn: '1h'})
-   console.log(token);
 
-   res.json({
-    message : 'Login successful',
-    token
-   })
+
    
+   res.cookie("token", token, {
+       httpOnly: true,
+       secure: false,
+       maxAge: 1 * 60 * 60 * 1000
+    });
+    
+    res.json({
+     message : 'Login successful',
+    })
+    
   } catch (error) {
     console.error('Error logging in user:', error);
     res.status(500).json({ message: 'Error' });
@@ -96,6 +102,9 @@ const login = async (req, res) => {
 const logout = (req,res)=>{
 
 // database Operations
+res.clearCookie("token").status(200).json({
+    "message" : 'LogOut Successfully'
+})
 
 }
 
