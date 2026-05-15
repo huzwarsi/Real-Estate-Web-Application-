@@ -12,10 +12,14 @@ const verifyToken = async(req,res,next) => {
              return res.json({"message" : 'Invalid Token'})
         }
         req.id = payload.id
+        console.log(req.id);
+        
         next()
     })
 
 
 }
+
+
 
 module.exports = verifyToken
