@@ -1,10 +1,11 @@
 const express = require('express')
-const { shouldBeAdmin, shouldBeLogin } = require('../Controller/testcontrollers')
+const {shouldBeLogin ,shouldBeAdmin}= require('../Controller/testcontrollers')
+const verifyToken = require('../Middleware/verifyToken')
 
 const router = express.Router()
 
-router.get('/should_be_loggedIn',shouldBeLogin)
-router.get('/should_be_Admin',shouldBeAdmin)
+router.get('/should_be_loggedIn',verifyToken, shouldBeLogin)
+router.get('/should_be_Admin', verifyToken, shouldBeAdmin)
 
 
 module.exports = router

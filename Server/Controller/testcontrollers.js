@@ -3,17 +3,22 @@ const jwt = require('jsonwebtoken')
 
 const shouldBeLogin = async(req,res) =>{
 
+    console.log(req.id);
+    
+
     const token  = req.cookies.token
     if(!token){
-        res.json({"message" : "Not Authenticated"})
+       return  res.json({"message" : "Not Authenticated"})
     }
 
     jwt.verify(token,process.env.Secret_key, async(err,payload)=>{
         if(err){
-                    
-         return   res.json({"message" : "Invalid Token"})
+             return res.json({"message" : 'Invalid Token'})
+            
         }
-        })
+    })
+
+
     res.json({"message" : "You are Authenticated"})
 }
 
@@ -21,9 +26,30 @@ const shouldBeLogin = async(req,res) =>{
 
 const shouldBeAdmin = (req,res) =>{
 
+
+      const token  = req.cookies.token
+    if(!token){
+        res.json({"message" : "Not Authenticated"})
+    }
+
+    jwt.verify(token,process.env.Secret_key, async(err,payload)=>{
+
+            if(err){
+             return res.json({"message" : "you are not Authenticated"})
+                
+            }
+            if(!payload.isAdmin == true){
+                return res.json({"message": 'You are not Admin'})
+            }
+
+            return res.json({'message' : 'you are Authenticated'})
+    })
+
 }
 
 
 
 
-module.exports = { shouldBeLogin, shouldBeAdmin }
+module.exports = {shouldBeLogin, shouldBeAdmin}
+
+
