@@ -11,8 +11,8 @@ const verifyToken = async(req,res,next) => {
         if(err){
              return res.json({"message" : 'Invalid Token'})
         }
-        req.id = payload.id
-        console.log(req.id);
+        req.userId = payload.id
+        console.log(req.userId);
         
         next()
     })
