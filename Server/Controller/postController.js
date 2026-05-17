@@ -14,7 +14,7 @@ const getPosts = async (req,res)=>{
                 bedrooms : parseInt(query.bedrooms) || undefined,
                 price : {
                     gte : parseInt(query.minPrice) || 0,
-                    lte : parseInt(query.maxPrice) || 1000000
+                    lte : parseInt(query.maxPrice) || 1000000,
                 }
                 
 
@@ -47,12 +47,33 @@ const getPost = async (req,res)=>{
 
             }
         })
-        res.json(post)
+
+         const token = req.cookies?.token;
+
+        
+    if (token) {
+      jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+        if (!err) {
+          const saved = await prisma.savedPost.findUnique({
+            where: {
+              userId_postId: {
+                postId: id,
+                userId: payload.id,
+              },
+            },
+          });
+          res.status(200).json({ ...post, isSaved: saved ? true : false });
+        }
+      });
+    }
+    res.status(200).json({ ...post, isSaved: false });
     }catch(error){
         console.log(error);
         res.json({"message" : "Failed to get Post"})
     }
 }
+
+
 
 
 

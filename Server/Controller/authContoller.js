@@ -41,7 +41,7 @@ const register = async(req,res)=>{
         })      
     }catch(error){
         console.error('Error registering user:', error);
-        res.status(500).json({ message: 'You are already exists' });
+        res.status(500).json({ message: 'Something went wrong' });
     }
 
 }
